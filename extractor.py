@@ -29,7 +29,7 @@ class Extractor(object):
         if len(ret) > 0:
 
             ret = np.array(ret)
-            print(ret.shape)
+            
             # filter
             model, inliers = ransac((ret[:, 0], ret[:, 1]),
                                      FundamentalMatrixTransform,
