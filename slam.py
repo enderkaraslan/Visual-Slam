@@ -1,30 +1,28 @@
 #!/usr/bin/env python3
 
-import cv2
 from display import *
-import numpy as np
+from extractor import *
 
 W = 1920 // 2
 H = 1080 // 2
 disp = Display2D(W, H)
 
-class FeatureExtractor(object):
-    def __init__(self):
-        self.orb = cv2.ORB_create(nfeatures=1000)
-    
-    def extract(self, img):
-        feats = cv2.goodFeaturesToTrack(np.mean(img, axis=2).astype(np.uint8), 3000, qualityLevel=0.01, minDistance=3)
-        return feats
-fe = FeatureExtractor()
+fe = Extractor()
+
+
 def process_frame(img):
-
     img = cv2.resize(img, (W, H))
-    kp = fe.extract(img)
-    for p in kp:
-        u,v =map(lambda x: int(round(x)), p[0])
-        cv2.circle(img, (u, v), 3, (0, 255, 0), thickness=-1)
+    matches = fe.extract(img)  
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Renk dönüşümü
+    print("%d matches" % (len(matches)))
+    
+    for pt1, pt2 in matches: 
+        u1, v1 = map(lambda x: int(round(x)), pt1)
+        u2, v2 = map(lambda x: int(round(x)), pt2)
+        cv2.circle(img, (u1, v1), 3, (0, 255, 0), thickness=-1)
+        cv2.line(img, (u1, v1), (u2, v2), (255, 0, 0), 1)
+        
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  
     disp.paint(img)
 
 
